@@ -434,13 +434,12 @@ $(document).ready(function() {
                             var diff = prevCol.length - s.clickedCard.attr("id").substr(1,1);
                             for(var i = 0; i < (diff + 1); i++)
                             {
+                                tempCards.push(prevCol.pop());
                                 if(prevCol.length > 0)
                                 {
                                     var removalStr = "#r" + (parseInt(s.clickedCard.attr("id").substr(1,1)) + i) + s.clickedCard.attr("id").substr(2);
                                     $(removalStr).addClass("hidden");
-                                }
-                                
-                                tempCards.push(prevCol.pop());
+                                }  
                             }
                             for(var i = 0; i < (diff + 1); i++)
                             {
