@@ -428,15 +428,16 @@ $(document).ready(function() {
                                 s.clickedCard.addClass("hidden");
                             }
                         }
+                        /* MOVING A STACK */
                         else
                         {
                             var tempCards = [];
                             var diff = prevCol.length - s.clickedCard.attr("id").substr(1,1);
                             for(var i = 0; i < (diff + 1); i++)
                             {
-                                tempCards.push(prevCol.pop());
                                 if(prevCol.length > 0)
                                 {
+                                    tempCards.push(prevCol.pop());
                                     var removalStr = "#r" + (parseInt(s.clickedCard.attr("id").substr(1,1)) + i) + s.clickedCard.attr("id").substr(2);
                                     $(removalStr).addClass("hidden");
                                 }  
