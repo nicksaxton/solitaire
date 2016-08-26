@@ -347,8 +347,7 @@ function Solitaire() {
 
 $(document).ready(function() {
     var s = new Solitaire();
-    var cardSelected = false,
-        clicked = false;
+    var clicked = false;
 
     s.createGame();
 
@@ -358,9 +357,17 @@ $(document).ready(function() {
         if(clicked)
         {
             var prevCard = s.getCard(s.clickedCard);
+            console.log("Prev card: " + prevCard.value + prevCard.suit.name);
 
+            /* --- CLICKED SAME CARD --- */
+            if($(this).attr("src") === s.clickedCard.attr("src"))
+            {
+                $(this).removeClass("clicked");
+                clicked = false;
+                console.log("SAME");
+            }
             /* --- INVALID MOVE --- */
-            if($(this).attr("src") === "img/cardback.jpg")
+            else if($(this).attr("src") === "img/cardback.jpg")
             {
                 s.setMessage("Invalid move!");
                 s.clickedCard.removeClass("clicked");
@@ -369,6 +376,7 @@ $(document).ready(function() {
             else if($(this).attr("id").indexOf("f") >= 0)
             {
                 var targetFoundation = s.getFoundation($(this));
+                console.log("Attempting to move to " + $(this).attr("id"));
 
                 if(prevCard.canAddToFoundation(targetFoundation))
                 {
@@ -397,6 +405,7 @@ $(document).ready(function() {
             {
                 /* Attempting to add card to column */
                 var targetColumn = s.getColumn($(this));
+                console.log("Attempting to move to column" + parseInt($(this).attr("id").substr(3)));
 
                 if(prevCard.canAddToColumn(targetColumn))
                 {
@@ -431,27 +440,43 @@ $(document).ready(function() {
                         /* MOVING A STACK */
                         else
                         {
+                            /* Holds the stack of cards to be moved */
                             var tempCards = [];
-                            var diff = prevCol.length - s.clickedCard.attr("id").substr(1,1);
-                            for(var i = 0; i < (diff + 1); i++)
+
+                            /* Get the number of cards to be moved */
+                            /* (1 is added since the columns are not zero based indexed) */
+                            var diff = prevCol.length - s.clickedCard.attr("id").substr(1,1) + 1;
+
+                            /* Get the length of the source column before moving any cards */
+                            var prevLength = prevCol.length;
+
+                            /* Remove the cards from the source column */
+                            for(var i = 0; i < diff; i++)
                             {
+                                tempCards.push(prevCol.pop());
+
+                                /* Hide the card placeholder as long as it's not the base card (empty spot) */
                                 if(prevCol.length > 0)
                                 {
-                                    tempCards.push(prevCol.pop());
-                                    var removalStr = "#r" + (parseInt(s.clickedCard.attr("id").substr(1,1)) + i) + s.clickedCard.attr("id").substr(2);
+                                    //parseInt(s.clickedCard.attr("id").substr(1,1))
+                                    var removalStr = "#r" + (prevLength - i) + s.clickedCard.attr("id").substr(2);
                                     $(removalStr).addClass("hidden");
+                                    console.log("Hiding " + removalStr);
                                 }  
                             }
-                            for(var i = 0; i < (diff + 1); i++)
+
+                            /* Add the cards to the destination column */
+                            for(var i = 0; i < diff; i++)
                             {
-                                if(targetColumn.length > 0)
-                                {
-                                    var targetId = "#r" + (parseInt($(this).attr("id").substr(1,1)) + 1 + i) + $(this).attr("id").substr(2);
-                                    $(targetId).removeClass("hidden");
-                                }
                                 targetColumn.push(tempCards.pop());
+
+                                /* Unhide the card placeholder */
+                                var targetId = "#r" + (parseInt($(this).attr("id").substr(1,1)) + 1 + i) + $(this).attr("id").substr(2);
+                                $(targetId).removeClass("hidden");
+                                console.log("Unhiding " + targetId);
                             }
 
+                            /* If there was a facedown card under the cards that were moved, flip it over */
                             if(prevCol.length > 0)
                             {
                                 prevCol[prevCol.length - 1].flip();
@@ -467,6 +492,7 @@ $(document).ready(function() {
             }
 
             clicked = false;
+            console.log(" ");
         }
         else
         {
